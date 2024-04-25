@@ -19,11 +19,13 @@ public class ReqThread implements Runnable{
             PrintWriter out = new PrintWriter(client.getOutputStream(),true);
  
             fromClient = in.readLine();
+            if (fromClient == null) {
+                client.close();
+                return;
+            }
             System.out.println("recebido do cliente: " + fromClient);
             
             if(fromClient.contains("GET /")) {
-    
-                // GET REQ
                 String clientMsg = fromClient.replace("GET /", "");
                 String htmlString = "";
                 System.out.println(clientMsg);
@@ -43,23 +45,20 @@ public class ReqThread implements Runnable{
                     } catch(FileNotFoundException  e){
                         System.out.println(e);
                     }
-                
-                    out.println(htmlString);
-                    out.flush();
-                    client.close();
+                    out.write("HTTP/1.1 200 OK\r\n");
+                    out.write("Content-Type: text/html\r\n");
+                    out.write("\r\n");
+                    System.out.println(htmlString);
+                    out.write(htmlString);
+                    
 
+                }else{
+                    out.write("HTTP/1.1 405 Method Not Allowed\r\n");
+                    out.write("\r\n");
+                    out.write("<h1>405 Method Not Allowed</h1>");
                 }
-            } else {
-                toClient = fromClient;
-                out.println(toClient);
-                System.out.println("send "+toClient);
-                if(fromClient.equals("Bye")) {
-                    toClient = "Tchau";
-                    System.out.println("send Tchau");
-                    out.println(toClient);
-                    client.close();
-                    System.out.println("socket closed");
-                }
+                out.close();
+                client.close();
             }
         } catch (Exception e){
             System.out.println(e);

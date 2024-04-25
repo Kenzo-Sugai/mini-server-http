@@ -6,7 +6,7 @@ public class Server {
         String fromClient;
         String toClient;
  
-        ServerSocket server = new ServerSocket(8080);
+        ServerSocket server = new ServerSocket(9300);
         System.out.println("Aguardando conexão na porta 8080");
  
         boolean run = true;
